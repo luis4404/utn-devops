@@ -1,8 +1,14 @@
 #!/bin/bash
 
 sudo apt update
-sudo apt install -y apache2
+sudo apt remove -y apache2
 
+if [ ! -d "/var/db/mysql" ]; then
+	sudo mkdir -p /var/db/mysql
+fi
+if [ -f "/tmp/ufw" ]; then
+	sudo mv -f /tmp/ufw /etc/default/ufw
+fi
 if [ ! -f "/swapdir/swapfile" ]; then
 	sudo mkdir /swapdir
 	cd /swapdir
@@ -15,23 +21,36 @@ if [ ! -f "/swapdir/swapfile" ]; then
 	echo vm.swappiness = 10 | sudo tee -a /etc/sysctl.conf
 fi
 
-if [ -f "/tmp/utn-dev.conf" ]; then
-    sudo mv /tmp/utn-dev.conf /etc/apache2/sites-available
-    sudo a2ensite utn-dev.conf
-    sudo a2dissite 000-default.conf
-    sudo service apache2 reload
+
+APACHE_ROOT="/var/www"
+APP_PATH="$APACHE_ROOT/utn-devops-app"
+
+if [ ! -d "$APACHE_ROOT" ]; then
+	sudo mkdir -p $APACHE_ROOT
 fi
 
-ROOT="/var/www"
-ABSOLUTE_PATH="$ROOT/utn-devops-app"
-
-if [ ! -d "$ROOT" ]; then
-	sudo mkdir -p $ROOT
-fi
-
-if [ ! -d "$ABSOLUTE_PATH" ]; then
-	cd $ROOT
+if [ ! -d "$APP_PATH" ]; then
+	cd $APACHE_ROOT
 	sudo git clone https://github.com/Fichen/utn-devops-app.git
-	cd $ABSOLUTE_PATH
+	cd $APP_PATH
 	sudo git checkout unidad-1
+fi
+
+for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
+if
+	sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common gnupg
+
+	##Configuramos el repositorio
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+	sudo chmod a+r /usr/share/keyrings/docker-archive-keyring.gpg
+	echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	
+	#Actualizo los paquetes con los nuevos repositorios
+	sudo apt-cache policy docker-ce
+	sudo apt-get update -y
+	#Instalo docker desde el repositorio oficial
+	sudo apt-get -y  install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose
+	
+	#Lo configuro para que inicie en el arranque
+	sudo systemctl enable docker
 fi

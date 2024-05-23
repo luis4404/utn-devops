@@ -28,8 +28,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder ".", "/vagrant"
 
-  config.vm.provision "file", source: "utn-dev.conf", destination: "/tmp/utn-dev.conf"
+  config.vm.provision "file", source: "ufw", destination: "/tmp/ufw"
   config.vm.provision :shell, path: "Vagrant.bootstrap.sh", run: "always"
-  config.vm.provision :shell, path: "create-user.sh"
 
 end
