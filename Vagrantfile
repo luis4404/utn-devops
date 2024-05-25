@@ -17,6 +17,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = box
   config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 4400, host: 4400, auto_correct: true
   config.vm.box_download_insecure = true
   config.vm.hostname = "utn-devops.localhost"
   config.vm.boot_timeout = 1000
