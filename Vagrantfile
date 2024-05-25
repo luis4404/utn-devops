@@ -16,11 +16,11 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.box = box
-  config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true
   config.vm.network "forwarded_port", guest: 4400, host: 4400, auto_correct: true
   config.vm.box_download_insecure = true
   config.vm.hostname = "utn-devops.localhost"
-  config.vm.boot_timeout = 1000
+  config.vm.boot_timeout = 3600
 
   config.vm.provider "virtualbox" do |vb|
     vb.name = "devops-vagrant-ubuntu"

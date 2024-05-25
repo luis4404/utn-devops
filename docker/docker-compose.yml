@@ -10,7 +10,7 @@ services:
       - "./configs/app/config_app.sh:/tmp/config_app.sh"
       - "/var/www/utn-devops-app:/var/www/html"
     ports:
-      - "8081:80"
+      - "8080:80"
     depends_on:
       - db_server
     extra_hosts:

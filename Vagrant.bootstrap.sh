@@ -13,7 +13,7 @@ if [ ! -f "/swapdir/swapfile" ]; then
 	sudo mkdir /swapdir
 	cd /swapdir
 	sudo dd if=/dev/zero of=/swapdir/swapfile bs=1024 count=4000000
-	sudo chmod 0600 /swapdir/swapfile
+ 	sudo chmod 0600 /swapdir/swapfile
 	sudo mkswap -f  /swapdir/swapfile
 	sudo swapon swapfile
 	echo "/swapdir/swapfile       none    swap    sw      0       0" | sudo tee -a /etc/fstab /etc/fstab
@@ -37,7 +37,7 @@ if [ ! -d "$APP_PATH" ]; then
 fi
 
 for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt remove $pkg; done
-if
+
 	sudo su
 	# Add Docker's official GPG key:
 	sudo apt update -y
@@ -48,8 +48,6 @@ if
 	sudo mv /docker.asc /etc/apt/keyrings/docker.asc
 	sudo install -m 0755 -d /etc/apt/keyrings
 	sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-	sudo dpkg --configure -a
 	# Add the repository to Apt sources:
 	echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 	
@@ -59,4 +57,3 @@ if
 	
 	#Lo configuro para que inicie en el arranque
 	sudo systemctl enable docker
-fi
